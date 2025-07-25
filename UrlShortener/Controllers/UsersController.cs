@@ -1,11 +1,15 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 using UrlShortener.Models;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authorization;
 
 namespace UrlShortener.Controllers
 {
-    [Route("api/[controller]")]
-    [ApiController]
+    //[Route("api/[controller]")]
+    //[ApiController]
     public class UsersController : ControllerBase
     {
         private readonly Models.DBContext dbContext;
@@ -37,8 +41,6 @@ namespace UrlShortener.Controllers
             {
                 dbContext.Users.Add(new Models.User
                 {
-                    FirstName = userDto.FirstName,
-                    LastName = userDto.LastName,
                     UserName = userDto.UserName,
                     Password = userDto.Password
                 });
@@ -48,11 +50,11 @@ namespace UrlShortener.Controllers
         }
         [HttpPost]
         [Route("Login")]
-        public IActionResult Login(Models.LoginDto loginDto)
+        public async Task<IActionResult> Login(Models.UserDto userDto)
         {
-            var objUser = dbContext.Users.FirstOrDefault(u => u.UserName == loginDto.UserName && u.Password == loginDto.Password);
+            var objUser = dbContext.Users.FirstOrDefault(u => u.UserName == userDto.UserName && u.Password == userDto.Password);
 
-            if (loginDto == null)
+            if (userDto == null)
             {
                 return BadRequest("User data is null");
             }
@@ -62,6 +64,16 @@ namespace UrlShortener.Controllers
             }
             if (objUser != null)
             {
+                var claims = new List<Claim>
+                {
+                    new Claim(ClaimTypes.Name, objUser.UserName),
+                    new Claim(ClaimTypes.NameIdentifier, objUser.UserId.ToString())
+                };
+
+                var identity = new ClaimsIdentity(claims, "MyCookieAuth");
+                var principal = new ClaimsPrincipal(identity);
+
+                await HttpContext.SignInAsync("MyCookieAuth", principal);
                 return Ok("Login successful");
             }
             else
@@ -69,7 +81,7 @@ namespace UrlShortener.Controllers
                 return Unauthorized("Invalid username or password");
             }
         }
-        [HttpGet]
+        /*[HttpGet]
         [Route("GetUsers")]
         public IActionResult GetUsers()
         {
@@ -90,6 +102,25 @@ namespace UrlShortener.Controllers
                 return NotFound("User not found");
             }
             return Ok(user);
+        }*/
+        // Позволяет получить информацию о текущем пользователе
+        /*[HttpGet]
+        [Route("Me")]
+        [Authorize] 
+        public IActionResult Me()
+        {
+            var userName = User.Identity.Name;
+            //var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            return Ok(userName);
+            //return Ok(new { userId, userName });
+        }*/
+        [HttpPost]
+        [Route("Logout")]
+        public async Task<IActionResult> Logout()
+        {
+            await HttpContext.SignOutAsync("MyCookieAuth");
+            return Ok("Logged out");
         }
     }
 }

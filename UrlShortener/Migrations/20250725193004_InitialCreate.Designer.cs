@@ -12,7 +12,7 @@ using UrlShortener.Models;
 namespace UrlShortener.Migrations
 {
     [DbContext(typeof(DBContext))]
-    [Migration("20250725163908_InitialCreate")]
+    [Migration("20250725193004_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -67,12 +67,6 @@ namespace UrlShortener.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("UserId"));
-
-                    b.Property<string>("FirstName")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("LastName")
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Password")
                         .IsRequired()

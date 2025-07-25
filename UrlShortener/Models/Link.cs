@@ -22,6 +22,6 @@ namespace UrlShortener.Models
 
         public int Clicks { get; set; }
 
-        public string Creator { get; set; }
+        public string Creator { get; set; } //Nickname (mb use UserId/User class instead)
     }
 }

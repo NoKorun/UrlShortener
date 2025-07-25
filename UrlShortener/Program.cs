@@ -11,6 +11,14 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddDbContext<DBContext>(e => e.UseSqlServer(builder.Configuration.GetConnectionString("DBCS")));
+builder.Services.AddAuthentication("MyCookieAuth")
+    .AddCookie("MyCookieAuth", options =>
+    {
+        options.Cookie.Name = "MyAuthCookie";
+        options.LoginPath = "/api/users/login"; // не обязателен
+    });
+
+builder.Services.AddAuthorization();
 
 var app = builder.Build();
 
@@ -21,6 +29,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
