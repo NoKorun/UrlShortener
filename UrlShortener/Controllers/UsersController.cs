@@ -15,8 +15,8 @@ namespace UrlShortener.Controllers
         }
 
         [HttpPost]
-        [Route("Registeration")]
-        public IActionResult Registeration(Models.UserDto userDto)
+        [Route("Registration")]
+        public IActionResult Registration(Models.UserDto userDto)
         {
             if (userDto == null)
             {

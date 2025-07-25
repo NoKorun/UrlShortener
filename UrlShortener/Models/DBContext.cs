@@ -8,5 +8,6 @@ namespace UrlShortener.Models
         {
         }
         public DbSet<User> Users { get; set; } = null!;
+        public DbSet<Link> Links { get; set; } = null!;
     }
 }
