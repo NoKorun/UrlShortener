@@ -1,0 +1,14 @@
+﻿@model UrlShortener.Models.UserDto
+
+<h2>Login</h2>
+<form method="post" asp-controller="Account" asp-action="Login">
+    <div class="form-group">
+        <label asp-for="UserName"></label>
+        <input asp-for="UserName" name="UserName" class="form-control" />
+    </div>
+    <div class="form-group">
+        <label asp-for="Password"></label>
+        <input asp-for="Password" name="Password" class="form-control" type="password" />
+    </div>
+    <button type="submit" class="btn btn-primary">Log in</button>
+</form>

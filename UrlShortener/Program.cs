@@ -11,26 +11,37 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddDbContext<DBContext>(e => e.UseSqlServer(builder.Configuration.GetConnectionString("DBCS")));
+
+builder.Services.AddControllersWithViews();
+// Add services for authentication and authorization
 builder.Services.AddAuthentication("MyCookieAuth")
     .AddCookie("MyCookieAuth", options =>
     {
         options.Cookie.Name = "MyAuthCookie";
-        options.LoginPath = "/api/users/login"; // не обязателен
+        options.LoginPath = "/Account/Login";
+        options.LogoutPath = "/Account/Logout";
     });
+
 
 builder.Services.AddAuthorization();
 
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
+if (!app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
 
+app.UseStaticFiles();
+app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
+//app.MapDefaultControllerRoute();
+app.MapControllerRoute(
+    name: "default",
+    pattern: "{controller=Account}/{action=Login}");
 
 app.MapControllers();
 
