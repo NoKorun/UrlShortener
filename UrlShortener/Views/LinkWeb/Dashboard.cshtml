@@ -13,13 +13,13 @@
     <h2>Create Short Link</h2>
 
     <!-- Link short form -->
-    <form asp-action="Create" asp-controller="LinkWeb" method="post" class="mb-5">
-        <div class="form-group">
-            <label asp-for="NewLink.Url" class="control-label">Original URL</label>
+    <form asp-action="CreateShortLink" asp-controller="LinkWeb" method="post" class="mb-5">
+        <div class="form-group mb-3">
+            <label asp-for="NewLink.Url" class="control-label fs-4">Original URL</label>
             <input asp-for="NewLink.Url" class="form-control" />
             <span asp-validation-for="NewLink.Url" class="text-danger"></span>
         </div>
-        <button type="submit" class="btn btn-primary mt-2">Shorten</button>
+        <button type="submit" class="btn btn-primary btn-lg px-4">Shorten</button>
     </form>
 
     <!-- Shortened links table -->
@@ -32,7 +32,7 @@
                     <th>Original URL</th>
                     <th>Short URL</th>
                     <th>Clicks</th>
-                    <th>Date</th>
+                    <th>Date of creation</th>
                 </tr>
             </thead>
             <tbody>

@@ -9,23 +9,24 @@ namespace UrlShortener.Controllers
     {
         private readonly DBContext dbContext;
 
+        // Constructor to inject the database context
         public AccountController(DBContext dbContext)
         {
             this.dbContext = dbContext;
         }
 
-        public IActionResult Register() => View();
         public IActionResult Login() => View();
-        [HttpGet]
+        public IActionResult Register() 
+        {
+            if (User.Identity.IsAuthenticated)
+            {
+                return RedirectToAction("Dashboard", "Linkweb");
+            }
+            return View();
+        }
         [ActionName("Logout")]
         public IActionResult Logout_Get() => View("Logout");
 
-
-        public IActionResult Debug()
-        {
-            ViewBag.Debug = TempData["debug"];
-            return View();
-        }
 
         [HttpPost]
         public async Task<IActionResult> Login([FromForm] UserDto userDto)
@@ -44,20 +45,17 @@ namespace UrlShortener.Controllers
                     new Claim(ClaimTypes.NameIdentifier, objUser.UserId.ToString())
                 };
 
-                // Provide cookie authentication
+                // Provide cookie for authentication
                 var identity = new ClaimsIdentity(claims, "MyCookieAuth");
                 var principal = new ClaimsPrincipal(identity);
 
                 await HttpContext.SignInAsync("MyCookieAuth", principal);
                 return RedirectToAction("Dashboard", "Linkweb");
-                //return RedirectToAction("Dashboard", "LinkWeb");
             }
             else
             {
                 ViewBag.Error = "Invalid username or password";
                 return View(userDto);
-                //return Unauthorized($"////" +    $"Username: {userDto.UserName}" + $"////, " +$"////Password: {userDto.Password}" +$"////");
-                //return Unauthorized("Invalid username or password");
             }
         }
 
@@ -80,6 +78,7 @@ namespace UrlShortener.Controllers
                 return View(userDto);
             }
 
+            // Check if the username already exists
             var existingUser = dbContext.Users.FirstOrDefault(u => u.UserName == userDto.UserName);
             if (existingUser != null)
             {

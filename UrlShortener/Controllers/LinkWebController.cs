@@ -1,11 +1,5 @@
 ﻿using HashidsNet;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using UrlShortener.Models;
 
 namespace UrlShortener.Controllers
@@ -14,25 +8,16 @@ namespace UrlShortener.Controllers
     {
         private readonly DBContext dbContext;
 
+        // Constructor to inject the database context
         public LinkWebController(DBContext context)
         {
             dbContext = context;
         }
+
         private string GetCurrentUserName()
         {
             return User.Identity.Name;
         }
-
-        // GET: LinkWeb/Create
-        /*public IActionResult Create()
-        {
-            var currentUser = GetCurrentUserName();
-            if (string.IsNullOrEmpty(currentUser))
-            {
-                return RedirectToAction("Login", "Account");
-            }
-            return View();
-        }*/
 
         public IActionResult Dashboard()
         {
@@ -54,6 +39,7 @@ namespace UrlShortener.Controllers
             return View(model);
         }
 
+        // Redirector action to handle short links
         [HttpGet("/{token}")]
         public IActionResult Redirector(string token)
         {
@@ -70,8 +56,9 @@ namespace UrlShortener.Controllers
         }
 
         [HttpPost]
-        public IActionResult Create(LinkViewModel model)
+        public IActionResult CreateShortLink(LinkViewModel model)
         {
+            // check if user is logged in
             var currentUser = GetCurrentUserName();
             if (string.IsNullOrEmpty(currentUser))
             {
@@ -79,6 +66,7 @@ namespace UrlShortener.Controllers
             }
             if (ModelState.IsValid)
             {
+                // Check if link already exists for the current user
                 LinkDto link = model.NewLink;
                 var existingLink = dbContext.Links.FirstOrDefault(l => l.Url == link.Url && l.Creator == currentUser);
                 if (existingLink != null)
@@ -103,7 +91,6 @@ namespace UrlShortener.Controllers
                 var hashids = new Hashids("rock salt");
                 var token = hashids.Encode(newLink.LinkId);
                 var shorturl = $"{HttpContext.Request.Scheme}://{HttpContext.Request.Host}/{token}";
-
                 newLink.Token = token;
                 newLink.ShortUrl = shorturl;
                 dbContext.SaveChanges();
