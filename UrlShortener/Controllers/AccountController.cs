@@ -33,11 +33,11 @@ namespace UrlShortener.Controllers
             var objUser = dbContext.Users.FirstOrDefault(u => u.UserName == userDto.UserName && u.Password == userDto.Password);
             if (!ModelState.IsValid)
             {
-                ViewBag.Error = "Invalid credentials";
+                ViewBag.Error = "Invalid username or password";
                 return View(userDto);
             }
             if (objUser != null)
-            { 
+            {
                 var claims = new List<Claim>
                 {
                     new Claim(ClaimTypes.Name, objUser.UserName),
@@ -49,14 +49,14 @@ namespace UrlShortener.Controllers
                 var principal = new ClaimsPrincipal(identity);
 
                 await HttpContext.SignInAsync("MyCookieAuth", principal);
-                return Ok("Login successful");
+                return RedirectToAction("Dashboard", "Linkweb");
                 //return RedirectToAction("Dashboard", "LinkWeb");
             }
             else
             {
                 ViewBag.Error = "Invalid username or password";
-                //return View(userDto);
-                return Unauthorized($"////" +    $"Username: {userDto.UserName}" + $"////, " +$"////Password: {userDto.Password}" +$"////");
+                return View(userDto);
+                //return Unauthorized($"////" +    $"Username: {userDto.UserName}" + $"////, " +$"////Password: {userDto.Password}" +$"////");
                 //return Unauthorized("Invalid username or password");
             }
         }
@@ -76,13 +76,14 @@ namespace UrlShortener.Controllers
         {
             if (!ModelState.IsValid)
             {
+                ViewBag.Error = "Invalid username or password";
                 return View(userDto);
             }
 
             var existingUser = dbContext.Users.FirstOrDefault(u => u.UserName == userDto.UserName);
             if (existingUser != null)
             {
-                ModelState.AddModelError("UserName", "Username is already taken");
+                ViewBag.Error = "Username is already taken";
                 return View(userDto);
             }
 

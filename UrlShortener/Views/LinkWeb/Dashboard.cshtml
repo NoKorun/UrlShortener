@@ -1,26 +1,31 @@
-﻿@model List<UrlShortener.Models.Link>
+﻿@{
+    Layout = "_Layout";
+}
+@model List<UrlShortener.Models.Link>
 @{
     ViewData["Title"] = "My Links";
 }
 <h2>My Shortened Links</h2>
-<table class="table">
-    <thead>
-        <tr>
-            <th>Original URL</th>
-            <th>Short URL</th>
-            <th>Clicks</th>
-            <th>Date</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var link in Model)
-        {
+<div class="container mt-4">
+    <table class="table">
+        <thead>
             <tr>
-                <td>@link.Url</td>
-                <td><a href="@link.ShortUrl">@link.ShortUrl</a></td>
-                <td>@link.Clicks</td>
-                <td>@link.DateOfCreation.ToShortDateString()</td>
+                <th>Original URL</th>
+                <th>Short URL</th>
+                <th>Clicks</th>
+                <th>Date</th>
             </tr>
-        }
-    </tbody>
-</table>
+        </thead>
+        <tbody>
+            @foreach (var link in Model)
+            {
+                <tr>
+                    <td>@link.Url</td>
+                    <td><a href="@link.ShortUrl">@link.ShortUrl</a></td>
+                    <td>@link.Clicks</td>
+                    <td>@link.DateOfCreation</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

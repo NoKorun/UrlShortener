@@ -1,10 +1,14 @@
 ﻿@{
+    Layout = "_Layout";
+}
+@{
     ViewData["Title"] = "Logout";
 }
 
 <h2>Logout</h2>
-
-<form asp-controller="Account" asp-action="Logout" method="post">
-    @Html.AntiForgeryToken()
-    <button type="submit" class="btn btn-danger">Log out</button>
-</form>
+<div class="container mt-4">
+    <form asp-controller="Account" asp-action="Logout" method="post">
+        @Html.AntiForgeryToken()
+        <button type="submit" class="btn btn-danger">Log out</button>
+    </form>
+</div>

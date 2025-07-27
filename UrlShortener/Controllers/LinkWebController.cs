@@ -26,6 +26,11 @@ namespace UrlShortener.Controllers
         // GET: LinkWeb/Create
         public IActionResult Create()
         {
+            var currentUser = GetCurrentUserName();
+            if (string.IsNullOrEmpty(currentUser))
+            {
+                return RedirectToAction("Login", "Account");
+            }
             return View();
         }
 
@@ -34,7 +39,7 @@ namespace UrlShortener.Controllers
             var currentUser = GetCurrentUserName();
             if (string.IsNullOrEmpty(currentUser))
             {
-                return Unauthorized("User not logged in");
+                return RedirectToAction("Login", "Account");
             }
 
             var userLinks = dbContext.Links

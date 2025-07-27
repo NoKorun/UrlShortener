@@ -1,22 +1,30 @@
-﻿@model UrlShortener.Models.UserDto
+﻿@{
+    Layout = "_Layout";
+}
+@model UrlShortener.Models.UserDto
 
 @{
     ViewData["Title"] = "Register";
 }
 
 <h2>Register</h2>
-
-<form method="post" asp-controller="Account" asp-action="Register">
-    <div class="form-group">
-        <label asp-for="UserName"></label>
-        <input asp-for="UserName" name="UserName" class="form-control" />
-        <span asp-validation-for="UserName" class="text-danger"></span>
-    </div>
-    <div class="form-group">
-        <label asp-for="Password"></label>
-        <input asp-for="Password" name="Password" type="password" class="form-control" />
-        <span asp-validation-for="Password" class="text-danger"></span>
-    </div>
-    <button type="submit" class="btn btn-success mt-2">Register</button>
-</form>
-
+<!-- Catch bad register --></>
+@if (ViewBag.Error != null)
+{
+    <div class="alert alert-danger">@ViewBag.Error</div>
+}
+<div class="container mt-4">
+    <form method="post" asp-controller="Account" asp-action="Register">
+        <div class="form-group">
+            <label asp-for="UserName"></label>
+            <input asp-for="UserName" name="UserName" class="form-control" />
+            <span asp-validation-for="UserName" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+            <label asp-for="Password"></label>
+            <input asp-for="Password" name="Password" type="password" class="form-control" />
+            <span asp-validation-for="Password" class="text-danger"></span>
+        </div>
+        <button type="submit" class="btn btn-success mt-2">Register</button>
+    </form>
+</div>

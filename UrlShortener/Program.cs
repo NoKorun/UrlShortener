@@ -41,7 +41,7 @@ app.UseAuthorization();
 //app.MapDefaultControllerRoute();
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Account}/{action=Login}");
+    pattern: "{controller=Linkweb}/{action=Dashboard}");
 
 app.MapControllers();
 
