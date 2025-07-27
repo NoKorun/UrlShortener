@@ -24,7 +24,7 @@ namespace UrlShortener.Controllers
         }
 
         // GET: LinkWeb/Create
-        public IActionResult Create()
+        /*public IActionResult Create()
         {
             var currentUser = GetCurrentUserName();
             if (string.IsNullOrEmpty(currentUser))
@@ -32,7 +32,7 @@ namespace UrlShortener.Controllers
                 return RedirectToAction("Login", "Account");
             }
             return View();
-        }
+        }*/
 
         public IActionResult Dashboard()
         {
@@ -42,22 +42,35 @@ namespace UrlShortener.Controllers
                 return RedirectToAction("Login", "Account");
             }
 
-            var userLinks = dbContext.Links
-                .Where(l => l.Creator == currentUser)
-                /*.Select(l => new
-                {
-                    l.Url,
-                    l.ShortUrl,
-                    l.Clicks,
-                    l.DateOfCreation
-                })*/
-                .ToList();
+            var model = new LinkViewModel
+            {
+                NewLink = new LinkDto(),
+                ExistingLinks = dbContext.Links
+                .Where(l => l.Creator == User.Identity.Name)  // Фильтр по текущему пользователю
+                .OrderByDescending(l => l.DateOfCreation)
+                .ToList()
+            };
 
-            return View(userLinks);
+            return View(model);
+        }
+
+        [HttpGet("/{token}")]
+        public IActionResult Redirector(string token)
+        {
+            var link = dbContext.Links.FirstOrDefault(l => l.Token == token);
+            if (link == null)
+            {
+                return NotFound("Invalid short link");
+            }
+
+            link.Clicks++;
+            dbContext.SaveChanges();
+
+            return Redirect(link.Url);
         }
 
         [HttpPost]
-        public IActionResult Create(LinkDto link)
+        public IActionResult Create(LinkViewModel model)
         {
             var currentUser = GetCurrentUserName();
             if (string.IsNullOrEmpty(currentUser))
@@ -66,6 +79,13 @@ namespace UrlShortener.Controllers
             }
             if (ModelState.IsValid)
             {
+                LinkDto link = model.NewLink;
+                var existingLink = dbContext.Links.FirstOrDefault(l => l.Url == link.Url && l.Creator == currentUser);
+                if (existingLink != null)
+                {
+                    TempData["Error"] = "Link already shortened";
+                    return RedirectToAction("Dashboard");
+                }
                 // Create local link (need id to generate token)
                 var newLink = new Models.Link
                 {

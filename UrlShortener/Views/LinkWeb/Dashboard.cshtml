@@ -1,31 +1,59 @@
 ﻿@{
     Layout = "_Layout";
 }
-@model List<UrlShortener.Models.Link>
+@model UrlShortener.Models.LinkViewModel
 @{
     ViewData["Title"] = "My Links";
 }
-<h2>My Shortened Links</h2>
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger">@TempData["Error"]</div>
+}
 <div class="container mt-4">
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Original URL</th>
-                <th>Short URL</th>
-                <th>Clicks</th>
-                <th>Date</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var link in Model)
-            {
+    <h2>Create Short Link</h2>
+
+    <!-- Link short form -->
+    <form asp-action="Create" asp-controller="LinkWeb" method="post" class="mb-5">
+        <div class="form-group">
+            <label asp-for="NewLink.Url" class="control-label">Original URL</label>
+            <input asp-for="NewLink.Url" class="form-control" />
+            <span asp-validation-for="NewLink.Url" class="text-danger"></span>
+        </div>
+        <button type="submit" class="btn btn-primary mt-2">Shorten</button>
+    </form>
+
+    <!-- Shortened links table -->
+    <h2>My Shortened Links</h2>
+    @if (Model.ExistingLinks.Any())
+    {
+        <table class="table">
+            <thead>
                 <tr>
-                    <td>@link.Url</td>
-                    <td><a href="@link.ShortUrl">@link.ShortUrl</a></td>
-                    <td>@link.Clicks</td>
-                    <td>@link.DateOfCreation</td>
+                    <th>Original URL</th>
+                    <th>Short URL</th>
+                    <th>Clicks</th>
+                    <th>Date</th>
                 </tr>
-            }
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+                @foreach (var link in Model.ExistingLinks)
+                {
+                    <tr>
+                        <td style="max-width: 300px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="@link.Url">
+                            <a href="@link.Url" target="_blank" rel="noopener noreferrer" title="@link.Url" style="display: inline-block; max-width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                                @link.Url
+                            </a>
+                        </td>
+                        <td><a href="@link.ShortUrl">@link.ShortUrl</a></td>
+                        <td>@link.Clicks</td>
+                        <td>@link.DateOfCreation</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+    else
+    {
+        <p>You haven't created any short links yet.</p>
+    }
 </div>
